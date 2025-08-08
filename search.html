@@ -1,13 +1,94 @@
+from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+HTML_TEMPLATE = """
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>The Search Pro</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      background: #f5f7fa;
+      height: 100vh;
+      justify-content: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    form {
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+    }
+    input[type="text"] {
+      width: 320px;
+      padding: 10px 15px;
+      font-size: 18px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #209ae0;
+      box-shadow: 0 0 5px #4285f4;
+    }
+    button {
+      padding: 10px 24px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      background-color: #4285f4;
+      color: white;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+  </style>
 </head>
 <body>
-  <h1>The 🔍 Pro</h1>
+  <h2>The 🔍 Pro<h2>
 
-  <script async src="https://cse.google.com/cse.js?cx=75545095eef0b4246"></script>
-  <div class="gcse-search"></div>
+  <form id="searchForm" autocomplete="off">
+    <input type="text" id="queryInput" placeholder="Nhập từ khóa tìm kiếm..." value="" />
+    <button type="submit">🔍</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('searchForm');
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const query = encodeURIComponent(document.getElementById('queryInput').value.trim());
+      if (query) {
+        const url = `https://cse.google.com/cse?cx=75545095eef0b4246#gsc.tab=0&gsc.q=${query}&gsc.sort=date`;
+        window.location.href = url
+      }
+    });
+
+    // Nếu muốn tự động mở tìm kiếm ngay khi gõ xong Enter, form đã có sẵn xử lý đó rồi
+</script>
+
 </body>
 </html>
+"""
+
+@app.route("/", methods=["GET"])
+def home():
+    query = request.args.get("q", "")
+    return render_template_string(HTML_TEMPLATE, query=query)
+
+if __name__ == "__main__":
+    app.run(debug=True)
